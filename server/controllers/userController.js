@@ -6,7 +6,11 @@ import Movie from "../models/Movie.js";
 // API Controller Function to Get User Bookings
 export const getUserBookings = async (req, res)=>{
     try {
-        const user = req.auth().userId;
+        const user = req.auth.userId;
+
+        if (!user) {
+            return res.status(401).json({ success: false, message: "Sign in required" });
+        }
 
         const bookings = await Booking.find({user}).populate({
             path: "show",
@@ -23,7 +27,11 @@ export const getUserBookings = async (req, res)=>{
 export const updateFavorite = async (req, res)=>{
     try {
         const { movieId } = req.body;
-        const userId = req.auth().userId;
+        const userId = req.auth.userId;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Sign in required" });
+        }
 
         const user = await clerkClient.users.getUser(userId)
 
@@ -48,8 +56,14 @@ export const updateFavorite = async (req, res)=>{
 
 export const getFavorites = async (req, res) =>{
     try {
-        const user = await clerkClient.users.getUser(req.auth().userId)
-        const favorites = user.privateMetadata.favorites;
+        const userId = req.auth.userId;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Sign in required" });
+        }
+
+        const user = await clerkClient.users.getUser(userId)
+        const favorites = user.privateMetadata.favorites || [];
 
         // Getting movies from database
         const movies = await Movie.find({_id: {$in: favorites}})

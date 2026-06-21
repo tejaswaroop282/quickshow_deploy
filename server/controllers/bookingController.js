@@ -23,7 +23,12 @@ const checkSeatsAvailability = async (showId, selectedSeats)=>{
 
 export const createBooking = async (req, res)=>{
     try {
-        const {userId} = req.auth();
+        const {userId} = req.auth;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "Please login to book tickets." });
+        }
+
         const {showId, selectedSeats} = req.body;
         const { origin } = req.headers;
 

@@ -87,9 +87,14 @@ export const getShows = async (req, res) =>{
         const shows = await Show.find({showDateTime: {$gte: new Date()}}).populate('movie').sort({ showDateTime: 1 });
 
         // filter unique shows
-        const uniqueShows = new Set(shows.map(show => show.movie))
+        const movieMap = {};
+        shows.forEach(show => {
+            if (show.movie && !movieMap[show.movie._id.toString()]) {
+                movieMap[show.movie._id.toString()] = show.movie;
+            }
+        });
 
-        res.json({success: true, shows: Array.from(uniqueShows)})
+        res.json({success: true, shows: Object.values(movieMap)})
     } catch (error) {
         console.error(error);
         res.json({ success: false, message: error.message });

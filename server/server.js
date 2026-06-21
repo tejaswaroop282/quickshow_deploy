@@ -27,6 +27,13 @@ app.use(clerkMiddleware({
     secretKey: process.env.CLERK_SECRET_KEY,
 }))
 
+app.use((req, res, next) => {
+    console.log(`[Request] ${req.method} ${req.path}`);
+    console.log(`[Auth Header]`, req.headers.authorization);
+    console.log(`[Parsed Auth]`, req.auth);
+    next();
+});
+
 
 // API Routes
 app.get('/', (req, res)=> res.send('Server is Live!'))
