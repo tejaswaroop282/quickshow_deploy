@@ -125,3 +125,41 @@ export const getShow = async (req, res) =>{
         res.json({ success: false, message: error.message });
     }
 }
+
+// API to delete a show
+export const deleteShow = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedShow = await Show.findByIdAndDelete(id);
+        if (!deletedShow) {
+            return res.json({ success: false, message: "Show not found" });
+        }
+        res.json({ success: true, message: "Show deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// API to update a show
+export const updateShow = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { showDateTime, showPrice } = req.body;
+
+        const updatedShow = await Show.findByIdAndUpdate(
+            id,
+            { showDateTime: new Date(showDateTime), showPrice },
+            { new: true }
+        );
+
+        if (!updatedShow) {
+            return res.json({ success: false, message: "Show not found" });
+        }
+
+        res.json({ success: true, message: "Show updated successfully", show: updatedShow });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+}
